@@ -88,27 +88,37 @@ void postorder(NODE *root){
         printf("%d ",temp->info);
     }
 }
-void levelorder(NODE *root){
+void levelorder(NODE *root) {
+    if (root == NULL) return;  // Handle empty tree
+    
     int level = 0;
-    NODE *temp, *marker = NULL;
+    NODE *temp;
+    NODE *marker = NULL;
     QUEUE q;
+    
     init(&q);
-    enqueue(&q,root);
-    enqueue(&q,marker);
+    enqueue(&q, root);      // Enqueue root
+    enqueue(&q, marker);    // Mark end of Level 0
+    
     printf("\nLevel %d --->", level);
-    while(!isEmpty(&q)){
-        if(temp==marker){
-            if(!isEmpty(&q)){
+    
+    while (!isEmpty(&q)) {
+        temp = dequeue(&q);  // Dequeue FIRST (critical fix)
+        
+        if (temp == marker) {  // Level separator detected
+            if (!isEmpty(&q)) {
                 level++;
-                enqueue(&q,marker);
+                enqueue(&q, marker);  // Mark next level's end
                 printf("\nLevel %d --->", level);
             }
         }
-        else{
-            printf("%d\t",temp->info);
-            if(temp->left)
-                enqueue(&q,temp->left);
-            if(temp->right)
+        else {  // Normal node
+            printf("%d\t", temp->info);
+            
+            // Enqueue children (if they exist)
+            if (temp->left != NULL)
+                enqueue(&q, temp->left);
+            if (temp->right != NULL)
                 enqueue(&q, temp->right);
         }
     }
